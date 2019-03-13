@@ -14,6 +14,7 @@ python manage.py runserver
 
 ## Setup Postgresql
 ```
+sudo apt install postgresql postgresql-contrib
 sudo -u postgres psql
 create user soft_user with password 'password';
 create database soft_db;
