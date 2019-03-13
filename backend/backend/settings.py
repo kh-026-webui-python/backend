@@ -76,12 +76,12 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'db_soft',
-        'USER': 'user_soft',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'soft_db',
+        'USER': 'soft_user',
         'PASSWORD': 'password',
-        'HOST' : '127.0.0.1',
-        'PORT' : '5432',
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
     }
 }
 
