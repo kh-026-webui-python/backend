@@ -1,3 +1,5 @@
+pylint==1.9.4
 Django==2.1.7
 psycopg2==2.7.7
 pytz==2018.9
+pytest==4.3.1
