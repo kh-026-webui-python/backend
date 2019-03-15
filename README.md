@@ -35,23 +35,3 @@ create database soft_db;
 grant all privileges on database soft_db to soft_user;
 ./manage.py migrate
 ```
-## How to set up Pylint
-
-#### How to get Pylint rcfile
-
-```
-pylint --generate-rcfile > path/to/your/resource/file
-```
-
-#### Settings for Pycharm
-
-```
- File -> Settings -> Tools -> External Tools -> Add("+" signs)
-```
-
-```
-Name: whatever you like
-Program: path/to/your/pylint
-Arguments: $FilePath$ --rcfile=path/to/your/rcfile
-Working directory: $ProjectFileDir$
-```
