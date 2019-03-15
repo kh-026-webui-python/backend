@@ -57,3 +57,21 @@ Program: path/to/your/pylint
 Arguments: $FilePath$ --rcfile=path/to/your/rcfile
 Working directory: $ProjectFileDir$
 ```
+
+## How to set up Pytest
+
+```
+Settings -> Tools -> Python Intergrated Tools
+```
+
+```
+Default test runner: pytest
+```
+
+```
+Edit Configurations -> Add("+" signs) -> Python tests -> pytest
+```
+
+```
+Target: path/to/your/tests
+```
