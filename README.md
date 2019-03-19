@@ -16,10 +16,6 @@ source <path to venv>/bin/activate
 $ pip install -r requirements.txt
 ```
 https://github.com/kh-026-webui-python/backend/network/members
-## Backend run server
-```
-python manage.py runserver
-```
 
 ## Database
 
@@ -29,9 +25,64 @@ sudo apt install postgresql postgresql-contrib
 sudo -u postgres psql
 ```
 input into postgres=#
+
 ```
-create user soft_user with password 'password';
+You need to create a unique user database. 
+In future, the user credential you will need to added to environment variables 
+```
+
+```
+create user <your_user> with password 'your_password';
 create database soft_db;
-grant all privileges on database soft_db to soft_user;
-./manage.py migrate
+grant all privileges on database soft_db to <your_user>;
+```
+\q - to exit the postgres
+
+```
+You can add environment variables as follow:
+    Edit configurations.. -> Environment variables -> Add("+" signs)
+```
+
+## Backend run server
+```
+python manage.py runserver
+```
+
+## How to set up Pylint
+
+#### How to get Pylint rcfile
+
+```
+pylint --generate-rcfile > path/to/your/resource/file
+```
+
+#### Settings for Pycharm
+
+```
+ File -> Settings -> Tools -> External Tools -> Add("+" signs)
+```
+
+```
+Name: whatever you like
+Program: path/to/your/pylint
+Arguments: $FilePath$ --rcfile=path/to/your/rcfile
+Working directory: $ProjectFileDir$
+```
+
+## How to set up Pytest
+
+```
+Settings -> Tools -> Python Intergrated Tools
+```
+
+```
+Default test runner: pytest
+```
+
+```
+Edit Configurations -> Add("+" signs) -> Python tests -> pytest
+```
+
+```
+Target: path/to/your/tests
 ```
