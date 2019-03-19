@@ -25,12 +25,23 @@ sudo apt install postgresql postgresql-contrib
 sudo -u postgres psql
 ```
 input into postgres=#
+
 ```
-create user soft_user with password 'password';
+You need to create a unique user database. 
+In future, the user credential you will need to added to environment variables 
+```
+
+```
+create user <your_user> with password 'your_password';
 create database soft_db;
-grant all privileges on database soft_db to soft_user;
+grant all privileges on database soft_db to <your_user>;
 ```
 \q - to exit the postgres
+
+```
+You can add environment variables as follow:
+    Edit configurations.. -> Environment variables -> Add("+" signs)
+```
 
 ## Backend run server
 ```
