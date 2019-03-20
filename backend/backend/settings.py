@@ -164,13 +164,13 @@ LOGGING = {
         'null': {
             "class": 'logging.NullHandler',
         },
-        'rollbar': {
-            'level': 'INFO',
-            'filters': ['require_debug_true'],
-            'class': 'rollbar.logger.RollbarHandler',
-            'access_token': os.environ.get('ROLLBAR_TOKEN'),
-            'environment': 'development',
-        },
+        # 'rollbar': {
+        #     'level': 'INFO',
+        #     'filters': ['require_debug_true'],
+        #     'class': 'rollbar.logger.RollbarHandler',
+        #     'access_token': os.environ.get('ROLLBAR_TOKEN'),
+        #     'environment': 'development',
+        # },
     },
     'loggers': {
         'django': {
@@ -180,7 +180,8 @@ LOGGING = {
             'handlers': ['null', ],
         },
         '': {
-            'handlers': ['console', 'production_file', 'debug_file', 'rollbar'],
+            'handlers': ['console', 'production_file', 'debug_file', #'rollbar'
+                         ],
             'level': "DEBUG",
         },
     }
