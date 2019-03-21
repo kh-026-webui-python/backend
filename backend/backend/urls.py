@@ -16,5 +16,4 @@ urlpatterns = [
     # re_path(r'^users/', include(router.urls), name="docs"),
     path('admin/', admin.site.urls),
     path('api/', include('api.urls'))
-    # path('api/health_check/', HealthCheckView.as_view()),
 ]
