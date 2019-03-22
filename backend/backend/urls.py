@@ -14,7 +14,7 @@ schema_view = get_schema_view(title='USERS API', renderer_classes=[OpenAPIRender
 
 urlpatterns = [
     re_path(r'^schema/', schema_view, name="docs"),
-    re_path(r'^users/', include(router.urls), name="docs"),
+    re_path(r'^users/', include(router.urls), name="users"),
     re_path(r'^login/', authtoken_views.obtain_auth_token),
     re_path(r'^admin/', admin.site.urls),
 ]
