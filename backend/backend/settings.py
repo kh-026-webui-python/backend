@@ -11,10 +11,10 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+import logging
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
@@ -26,7 +26,6 @@ SECRET_KEY = os.environ.get('APP_SECRET_KEY', 'unsafe-secret-key')
 DEBUG = bool(os.environ.get('DJANGO_DEBUG', True) == 'False')
 
 ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost').split(',')
-
 
 # Application definition
 
@@ -79,10 +78,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/2.1/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': os.environ.get('APP_DB_ENGINE'),
@@ -93,7 +88,6 @@ DATABASES = {
         'PORT': os.environ.get('DB_PORT', None),
     }
 }
-
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
 
@@ -112,7 +106,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
 
@@ -126,12 +119,80 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        },
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue'
+        }
+    },
+    'formatters': {
+        'main_formatter': {
+            'format': '%(levelname)s:%(name)s: %(message)s '
+                      '(%(asctime)s; %(filename)s:%(lineno)d)',
+            'datefmt': "%Y-%m-%d %H:%M:%S",
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'main_formatter',
+        },
+        'production_file': {
+            'level': 'INFO',
+            'filters': ['require_debug_false'],
+            'class': 'logging.handlers.RotatingFileHandler',
+            'formatter': 'main_formatter',
+            'filename': 'logs/main.log',
+            'maxBytes': 1024 * 1024 * 5,
+            'backupCount': 7,
+        },
+        'debug_file': {
+            'level': 'DEBUG',
+            'filters': ['require_debug_true'],
+            'class': 'logging.handlers.RotatingFileHandler',
+            'formatter': 'main_formatter',
+            'filename': 'logs/main_debug.log',
+            'maxBytes': 1024 * 1024 * 5,
+            'backupCount': 7,
+        },
+        'null': {
+            "class": 'logging.NullHandler',
+        },
+        # TODO: uncomment to enable logging to Rollbar
+        # 'rollbar': {
+        #     'level': 'INFO',
+        #     'filters': ['require_debug_true'],
+        #     'class': 'rollbar.logger.RollbarHandler',
+        #     'access_token': os.environ.get('ROLLBAR_TOKEN'),
+        #     'environment': 'development',
+        # },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['null', ],
+        },
+        'py.warnings': {
+            'handlers': ['null', ],
+        },
+        '': {
+            'handlers': ['console', 'production_file', 'debug_file', #'rollbar'
+                         ],
+            'level': "DEBUG",
+        },
+    }
+}
 
 SWAGGER_SETTINGS = {
     'exclude_url_names': [],
