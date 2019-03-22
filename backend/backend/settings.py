@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+import logging
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -47,6 +48,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'rollbar.contrib.django.middleware.RollbarNotifierMiddleware',
 ]
 
 ROOT_URLCONF = 'backend.urls'
@@ -116,6 +118,75 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        },
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue'
+        }
+    },
+    'formatters': {
+        'main_formatter': {
+            'format': '%(levelname)s:%(name)s: %(message)s '
+                      '(%(asctime)s; %(filename)s:%(lineno)d)',
+            'datefmt': "%Y-%m-%d %H:%M:%S",
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'main_formatter',
+        },
+        'production_file': {
+            'level': 'INFO',
+            'filters': ['require_debug_false'],
+            'class': 'logging.handlers.RotatingFileHandler',
+            'formatter': 'main_formatter',
+            'filename': 'logs/main.log',
+            'maxBytes': 1024 * 1024 * 5,
+            'backupCount': 7,
+        },
+        'debug_file': {
+            'level': 'DEBUG',
+            'filters': ['require_debug_true'],
+            'class': 'logging.handlers.RotatingFileHandler',
+            'formatter': 'main_formatter',
+            'filename': 'logs/main_debug.log',
+            'maxBytes': 1024 * 1024 * 5,
+            'backupCount': 7,
+        },
+        'null': {
+            "class": 'logging.NullHandler',
+        },
+        # TODO: uncomment to enable logging to Rollbar
+        # 'rollbar': {
+        #     'level': 'INFO',
+        #     'filters': ['require_debug_true'],
+        #     'class': 'rollbar.logger.RollbarHandler',
+        #     'access_token': os.environ.get('ROLLBAR_TOKEN'),
+        #     'environment': 'development',
+        # },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['null', ],
+        },
+        'py.warnings': {
+            'handlers': ['null', ],
+        },
+        '': {
+            'handlers': ['console', 'production_file', 'debug_file', #'rollbar'
+                         ],
+            'level': "DEBUG",
+        },
+    }
+}
 
 SWAGGER_SETTINGS = {
     'exclude_url_names': [],
