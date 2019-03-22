@@ -12,6 +12,7 @@ from .models import HealthCheck
 
 class UserViewSet(viewsets.ModelViewSet):
     """
+
     API endpoint for USERS
     """
     queryset = User.objects.all().order_by('-date_joined')
@@ -20,5 +21,4 @@ class UserViewSet(viewsets.ModelViewSet):
 
 class HealthCheckView(APIView):
     def get(self, request):
-        # health_check = HealthCheck.objects.all()
         return Response({"ping" : "pong"})

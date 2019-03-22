@@ -13,7 +13,7 @@ schema_view = get_schema_view(title='USERS API', renderer_classes=[OpenAPIRender
 
 urlpatterns = [
     # re_path(r'^', schema_view, name="docs"),
-    # re_path(r'^users/', include(router.urls), name="docs"),
+    re_path(r'^users/', include(router.urls), name="docs"),
     path('admin/', admin.site.urls),
     path('api/', include('api.urls'))
 ]
