@@ -164,6 +164,7 @@ LOGGING = {
         'null': {
             "class": 'logging.NullHandler',
         },
+        # TODO: uncomment to enable logging to Rollbar
         # 'rollbar': {
         #     'level': 'INFO',
         #     'filters': ['require_debug_true'],
