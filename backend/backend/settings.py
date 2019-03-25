@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 
 import os
 import logging
+import datetime
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -38,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework_swagger',
+    'rest_registration'
 ]
 
 MIDDLEWARE = [
@@ -72,6 +75,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
+
 DATABASES = {
     'default': {
         'ENGINE': os.environ.get('APP_DB_ENGINE'),
@@ -82,6 +86,8 @@ DATABASES = {
         'PORT': os.environ.get('DB_PORT', None),
     }
 }
+
+
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
 
@@ -219,4 +225,42 @@ SWAGGER_SETTINGS = {
                        'the authorization filters',
     },
     'doc_expansion': 'none',
+}
+
+
+REST_REGISTRATION = {
+    'USER_LOGIN_FIELDS': None,
+    'USER_HIDDEN_FIELDS': (
+        'is_active',
+        'is_staff',
+        'is_superuser',
+        'user_permissions',
+        'groups',
+        'date_joined',
+        'is_aplicant'
+    ),
+
+    'USER_VERIFICATION_FLAG_FIELD': 'is_active',
+
+    'REGISTER_SERIALIZER_CLASS': 'rest_registration.api.serializers.DefaultRegisterUserSerializer',
+    'REGISTER_SERIALIZER_PASSWORD_CONFIRM': True,
+
+    'REGISTER_VERIFICATION_ENABLED': True,
+    'REGISTER_VERIFICATION_PERIOD': datetime.timedelta(days=7),
+    'REGISTER_VERIFICATION_URL': 'http://localhost:8080/register',
+    'REGISTER_EMAIL_VERIFICATION_ENABLED': False,
+
+    'LOGIN_SERIALIZER_CLASS': 'rest_registration.api.serializers.DefaultLoginSerializer',
+    'LOGIN_AUTHENTICATE_SESSION': None,
+    'LOGIN_RETRIEVE_TOKEN': None,
+
+    'RESET_PASSWORD_VERIFICATION_PERIOD': datetime.timedelta(days=1),
+    'RESET_PASSWORD_VERIFICATION_URL': 'http://localhost:8080/reset_password',
+    'RESET_PASSWORD_VERIFICATION_ONE_TIME_USE': False,
+
+    'CHANGE_PASSWORD_SERIALIZER_PASSWORD_CONFIRM': True,
+
+    'PROFILE_SERIALIZER_CLASS': 'rest_registration.api.serializers.DefaultUserProfileSerializer',
+
+    'VERIFICATION_FROM_EMAIL': 'no-reply@example.com',
 }
