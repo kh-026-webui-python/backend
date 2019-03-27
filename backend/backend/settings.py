@@ -194,6 +194,7 @@ LOGGING = {
     }
 }
 
+
 SWAGGER_SETTINGS = {
     'exclude_url_names': [],
     'exclude_namespaces': [],
