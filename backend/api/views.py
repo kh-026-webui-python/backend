@@ -12,3 +12,6 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+def upload_file_from_users(request):
+    
