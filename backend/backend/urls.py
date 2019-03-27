@@ -17,5 +17,4 @@ urlpatterns = [
     re_path(r'^users/', include(router.urls), name="users"),
     re_path(r'^login/', authtoken_views.obtain_auth_token),
     re_path(r'^admin/', admin.site.urls),
-    path('api/', include('rest_registration.api.urls')),
 ]
