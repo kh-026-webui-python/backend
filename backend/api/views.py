@@ -6,8 +6,6 @@ from rest_framework.views import APIView
 import psycopg2
 import os
 
-from .models import HealthCheck
-
 
 class UserViewSet(viewsets.ModelViewSet):
     """
