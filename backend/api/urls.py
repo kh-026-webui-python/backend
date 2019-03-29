@@ -6,5 +6,4 @@ app_name = 'health_check'
 
 urlpatterns = [
     path('health_check/', HealthCheckView.as_view()),
-    path('resume/', )
 ]
