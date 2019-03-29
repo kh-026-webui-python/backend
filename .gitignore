@@ -105,4 +105,4 @@ venv.bak/
 
 .idea
 frontend/
-migration/
+backend/api/migrations/
