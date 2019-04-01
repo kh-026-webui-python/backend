@@ -8,6 +8,7 @@ from rest_framework.authtoken import views as authtoken_views
 from django.contrib import admin
 
 
+
 router = routers.DefaultRouter()
 router.register(r'users', api_views.UserViewSet)
 schema_view = get_schema_view(title='USERS API', renderer_classes=[OpenAPIRenderer, SwaggerUIRenderer])
@@ -17,4 +18,5 @@ urlpatterns = [
     re_path(r'^users/', include(router.urls), name="users"),
     re_path(r'^login/', authtoken_views.obtain_auth_token),
     re_path(r'^admin/', admin.site.urls),
+    re_path(r'^api/resume/', api_views.upload_file),
 ]
