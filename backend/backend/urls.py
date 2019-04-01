@@ -1,6 +1,5 @@
 from django.urls import path, re_path, include
 from rest_framework import routers
-from rest_framework.urlpatterns import format_suffix_patterns
 from rest_framework.schemas import get_schema_view
 from api import views as api_views
 from rest_framework_swagger.renderers import SwaggerUIRenderer, OpenAPIRenderer
