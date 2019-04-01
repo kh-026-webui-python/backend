@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework_swagger',
+    'api'
 ]
 
 MIDDLEWARE = [
@@ -220,3 +221,8 @@ SWAGGER_SETTINGS = {
     },
     'doc_expansion': 'none',
 }
+
+FILE_UPLOAD_HANDLERS = [
+    'django.core.files.uploadhandler.MemoryFileUploadHandler',
+    'django.core.files.uploadhandler.TemporaryFileUploadHandler',
+]
