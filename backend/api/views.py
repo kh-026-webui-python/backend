@@ -1,7 +1,11 @@
+from rest_framework import status
 from django.contrib.auth.models import User
 from rest_framework import viewsets
-from api.serializers import UserSerializer
+from .models import Document
+from .serializers import UserSerializer, DocumentSerializer
+from rest_framework.parsers import FileUploadParser
 from rest_framework.response import Response
+from django.core.files.storage import FileSystemStorage
 from rest_framework.views import APIView
 import psycopg2
 import os
@@ -32,6 +36,21 @@ class HealthCheckView(APIView):
         return Response({"server": "pong",
                          "database": db})
 
-def upload_CV(request):
-    if request.method == 'POST' and request.FILES['file']:
-        myfile = request.FILES['file']
+
+class FileUploadView(APIView):
+    parser_class = (FileUploadParser,)
+
+    def post(self, request):
+        # frontend check if file valid
+        f = request.data['file']
+        # with open('pdf.pdf', 'wb') as file:
+        #     file.write(f.file)
+        filename = "pdf.pdf"
+        fs = FileSystemStorage()
+        if fs.exists(filename):
+            fs.delete(filename)
+        fs.save(filename, f)
+
+
+
+        return Response(status=status.HTTP_201_CREATED)
