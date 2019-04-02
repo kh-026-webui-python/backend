@@ -170,14 +170,14 @@ LOGGING = {
         'null': {
             "class": 'logging.NullHandler',
         },
-
-          'rollbar': {
-              'level': 'INFO',
-              'filters': ['require_debug_true'],
-              'class': 'rollbar.logger.RollbarHandler',
-              'access_token': os.environ.get('ROLLBAR_TOKEN'),
-              'environment': 'development',
-          },
+        # TODO: uncomment to enable logging to Rollbar
+        # 'rollbar': {
+        #     'level': 'INFO',
+        #     'filters': ['require_debug_true'],
+        #     'class': 'rollbar.logger.RollbarHandler',
+        #     'access_token': os.environ.get('ROLLBAR_TOKEN'),
+        #     'environment': 'development',
+        # },
     },
     'loggers': {
         'django': {
@@ -193,6 +193,7 @@ LOGGING = {
         },
     }
 }
+
 
 SWAGGER_SETTINGS = {
     'exclude_url_names': [],
@@ -226,7 +227,5 @@ SWAGGER_SETTINGS = {
     },
     'doc_expansion': 'none',
 }
-REST_FRAMEWORK = {
-    'EXCEPTION_HANDLER': 'rollbar.contrib.django_rest_framework.post_exception_handler'
-}
+
 
