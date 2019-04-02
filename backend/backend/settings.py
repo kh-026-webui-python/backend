@@ -38,6 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework_swagger',
+    'health_check',
+    'corsheaders',
+    'api',
 ]
 
 MIDDLEWARE = [
@@ -48,6 +51,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.BrokenLinkEmailsMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'rollbar.contrib.django.middleware.RollbarNotifierMiddleware',
 ]
 
@@ -164,14 +170,14 @@ LOGGING = {
         'null': {
             "class": 'logging.NullHandler',
         },
-        # TODO: uncomment to enable logging to Rollbar
-        # 'rollbar': {
-        #     'level': 'INFO',
-        #     'filters': ['require_debug_true'],
-        #     'class': 'rollbar.logger.RollbarHandler',
-        #     'access_token': os.environ.get('ROLLBAR_TOKEN'),
-        #     'environment': 'development',
-        # },
+
+          'rollbar': {
+              'level': 'INFO',
+              'filters': ['require_debug_true'],
+              'class': 'rollbar.logger.RollbarHandler',
+              'access_token': os.environ.get('ROLLBAR_TOKEN'),
+              'environment': 'development',
+          },
     },
     'loggers': {
         'django': {
@@ -220,3 +226,7 @@ SWAGGER_SETTINGS = {
     },
     'doc_expansion': 'none',
 }
+REST_FRAMEWORK = {
+    'EXCEPTION_HANDLER': 'rollbar.contrib.django_rest_framework.post_exception_handler'
+}
+

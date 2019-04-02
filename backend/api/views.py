@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework import viewsets, status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -16,20 +17,25 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = User
 
 
+@csrf_exempt
 def upload_file(request):
-    if (request.method == 'POST'):
 
-        file = request.FILES[0]
-        expansion = file.endwith('.csv')
+    if request.method == 'POST':
 
-        if expansion != '.csv':
+        filename = request.FILES['file'].name
+
+        if filename.endswith('.csv'):
+
             '''
-            TODO: redirect on login page
+            TODO: add file saving here
             '''
-            return JsonResponse({'message': 'Wrong extension, please use .csv files in your request'}, 409)
+
+            return JsonResponse({'message': 'Sent'}, status=status.HTTP_200_OK)
 
         else:
-            '''
-              TODO: add file saving here
-              '''
-            return Response(status=status.HTTP_200_OK)
+
+            return JsonResponse({'message': 'Wrong extension, please use .csv files in your request'},
+                                status=status.HTTP_409_CONFLICT)
+    else:
+
+        return JsonResponse({'message': 'Wrong method,use POST'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
