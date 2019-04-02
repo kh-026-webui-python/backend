@@ -40,11 +40,11 @@ class UserManager(object):
     @classmethod
     def create_username(cls, user_data):
 
-        fields = (
-            user_data.get(cls.USER[-1]).get(cls.PROFILE[0], ''),
+        key_words = (
+            user_data.get(cls.USER[-1]).get(cls.PROFILE[0], '  ')[:2],
             user_data.get(cls.USER[2], ''),
-            user_data.get(cls.USER[3],),
-            user_data.get(cls.USER[-1]).get(cls.PROFILE[1], ''),
+            user_data.get(cls.USER[3], ''),
+            user_data.get(cls.USER[-1]).get(cls.PROFILE[1], '  ')[-2:],
         )
 
-        return cls.SEPARATOR.join([Transliterator.transliterate(field.lower()) for field in fields])
+        return cls.SEPARATOR.join([Transliterator.transliterate(word.lower().strip()) for word in key_words])

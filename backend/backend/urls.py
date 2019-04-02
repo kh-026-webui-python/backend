@@ -17,5 +17,5 @@ urlpatterns = [
     re_path(r'^users/', include(router.urls), name="users"),
     re_path(r'^login/', authtoken_views.obtain_auth_token),
     re_path(r'^admin/', admin.site.urls),
-    re_path(r'^upload/', api_views.FileUploadView.as_view())
+    re_path(r'^upload/(?P<filename>[^/]+)$', api_views.FileUploadView.as_view())
 ]

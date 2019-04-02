@@ -1,17 +1,22 @@
+from datetime import datetime
+
+from api.models import Profile
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from api.models import Profile
 
 
 class ProfileSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Profile
         fields = ('location', 'birth_date')
 
+    def validate(self, data):
+        if 'birth_date' in data:
+            data['birth_date'] = datetime.strptime(data['birth_date'], "%d.%m.%y").strftime('%Y-%m-%d')
+        return {key: value for key, value in data.items() if key in self.fields}
+
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
-
     profile = ProfileSerializer(required=True)
 
     class Meta:
@@ -33,10 +38,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         return user
 
     def validate(self, data):
+        if 'profile' in data:
+            data['profile'] = ProfileSerializer().validate(data['profile'])
+
         return {key: value for key, value in data.items() if key in self.fields}
-
-
-
-
-
-
