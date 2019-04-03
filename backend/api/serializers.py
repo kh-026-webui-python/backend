@@ -10,6 +10,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class DocumentSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Document
-        field = ('cv')
+        fields = ('path',)
