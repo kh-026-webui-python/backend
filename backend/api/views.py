@@ -31,8 +31,6 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
-    queryset = User.objects.all()
-    serializer_class = User
 
 
 @csrf_exempt
@@ -85,8 +83,7 @@ class UploadResumeView(APIView):
             allowed_mimetypes=['application/pdf'],
             max_size=3 * 1024 * 1024
         )
-        # parser_class = (FileUploadParser,)
-        # serializer_class = DocumentSerializer
+
         if request.data.get('file'):
             uploaded_file = request.data.get('file')
             try:
@@ -95,7 +92,7 @@ class UploadResumeView(APIView):
                 print(e)
                 return JsonResponse({'error': e.message}, status=status.HTTP_400_BAD_REQUEST)
         else:
-            return JsonResponse({'error': "file must have 'file' key"}, status=status.HTTP_400_BAD_REQUEST)
+            return JsonResponse({'error': "there is no file"}, status=status.HTTP_400_BAD_REQUEST)
 
         folder = 'CVs/'
         filename = uploaded_file.name
