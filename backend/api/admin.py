@@ -3,4 +3,3 @@ from django.contrib.auth.models import User
 from .models import Document
 
 admin.register(Document)
-
