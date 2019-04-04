@@ -31,8 +31,6 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
-    queryset = User.objects.all()
-    serializer_class = User
 
 
 @csrf_exempt
