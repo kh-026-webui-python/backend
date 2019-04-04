@@ -1,13 +1,15 @@
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.core.exceptions import ValidationError
 from rest_framework import viewsets, status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.views import APIView
 from rest_framework.parsers import FileUploadParser
-from api.serializers import UserSerializer
+from .serializers import UserSerializer
+from libs.FileValidator import FileValidator
 
 import psycopg2
 import os
@@ -64,6 +66,19 @@ class HealthCheckView(APIView):
                          "database": db})
 
 
-# def upload_CV(request):
-#    if request.method == 'POST' and request.FILES['file']:
-#       myfile = request.FILES['file']
+class UploadFileView(APIView):
+
+    def post(self, request, validator=FileValidator(
+        allowed_extensions=['pdf'],
+        allowed_mimetypes=['application/pdf'],
+        max_size=3 * 1024 * 1024
+    )):
+        try:
+            uploaded_file = request.data['file']
+            validator(uploaded_file)
+
+        except ValidationError as e:
+            print(e)
+            return JsonResponse({'error' : e.message}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(status=status.HTTP_200_OK)
