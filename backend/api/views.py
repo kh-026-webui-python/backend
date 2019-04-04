@@ -76,21 +76,6 @@ class HealthCheckView(APIView):
                          "database": db})
 
 
-#         folder = 'CVs/'
-#         filename = uploaded_file.name
-#         storage = FileSystemStorage(location=folder)
-#
-#         cv = Document()
-#         cv.path = f"{storage.location}/{filename}"
-#         try:
-#             cv.save()
-#             storage.save(filename, uploaded_file)
-#         except IntegrityError as e:
-#             print(e.args[0])
-#             content = {'error' : 'file with same name already exists'}
-#             return HttpResponse(json.dumps(content), content_type='application/json')
-#
-#         return Response(status=status.HTTP_201_CREATED)
 class UploadResumeView(APIView):
 
     def post(self, request):
@@ -98,7 +83,7 @@ class UploadResumeView(APIView):
         validator = FileValidator(
             allowed_extensions=['pdf'],
             allowed_mimetypes=['application/pdf'],
-            max_size= 3 * 1024 * 1024
+            max_size=3 * 1024 * 1024
         )
         # parser_class = (FileUploadParser,)
         # serializer_class = DocumentSerializer
@@ -110,6 +95,19 @@ class UploadResumeView(APIView):
                 print(e)
                 return JsonResponse({'error': e.message}, status=status.HTTP_400_BAD_REQUEST)
         else:
-            return JsonResponse({'error' : "file must have 'file' key"}, status=status.HTTP_400_BAD_REQUEST)
+            return JsonResponse({'error': "file must have 'file' key"}, status=status.HTTP_400_BAD_REQUEST)
+
+        folder = 'CVs/'
+        filename = uploaded_file.name
+        storage = FileSystemStorage(location=folder)
+
+        cv = Document()
+        cv.path = f"{storage.location}/{filename}"
+        try:
+            cv.save()
+            storage.save(filename, uploaded_file)
+        except IntegrityError as e:
+            print(e.args[0])
+            return JsonResponse({'error': 'file with same name already exists'}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(status=status.HTTP_201_CREATED)
