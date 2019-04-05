@@ -1,16 +1,28 @@
+from rest_framework import status
 from django.contrib.auth.models import User
+from .models import Document
+from rest_framework import viewsets
+from django.http import HttpResponse
+from .serializers import UserSerializer, DocumentSerializer
+from rest_framework.parsers import FileUploadParser
+from rest_framework.response import Response
+from django.core.files.storage import FileSystemStorage
+from django.db.utils import IntegrityError
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.core.exceptions import ValidationError
 from rest_framework import viewsets, status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.views import APIView
 from rest_framework.parsers import FileUploadParser
-from api.serializers import UserSerializer
+from .serializers import UserSerializer
+from utils.FileValidator import FileValidator
 
 import psycopg2
 import os
+import json
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -61,6 +73,37 @@ class HealthCheckView(APIView):
         return Response({"server": "pong",
                          "database": db})
 
-# def upload_CV(request):
-#    if request.method == 'POST' and request.FILES['file']:
-#       myfile = request.FILES['file']
+class UploadResumeView(APIView):
+
+    def post(self, request):
+
+        validator = FileValidator(
+            allowed_extensions=['pdf'],
+            allowed_mimetypes=['application/pdf'],
+            max_size=3 * 1024 * 1024
+        )
+
+        if request.data.get('file'):
+            uploaded_file = request.data.get('file')
+            try:
+                validator(uploaded_file)
+            except ValidationError as e:
+                print(e)
+                return JsonResponse({'error': e.message}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return JsonResponse({'error': "there is no file"}, status=status.HTTP_400_BAD_REQUEST)
+
+        folder = 'CVs/'
+        filename = uploaded_file.name
+        storage = FileSystemStorage(location=folder)
+
+        cv = Document()
+        cv.path = f"{storage.location}/{filename}"
+        try:
+            cv.save()
+            storage.save(filename, uploaded_file)
+        except IntegrityError as e:
+            print(e.args[0])
+            return JsonResponse({'error': 'file with same name already exists'}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(status=status.HTTP_201_CREATED)
