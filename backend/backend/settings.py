@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework_swagger',
+    'corsheaders',
+    'api',
 ]
 
 MIDDLEWARE = [
@@ -48,9 +50,12 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'rollbar.contrib.django.middleware.RollbarNotifierMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.BrokenLinkEmailsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
 
+CORS_ORIGIN_ALLOW_ALL = True
 ROOT_URLCONF = 'backend.urls'
 
 TEMPLATES = [
@@ -188,6 +193,7 @@ LOGGING = {
     }
 }
 
+
 SWAGGER_SETTINGS = {
     'exclude_url_names': [],
     'exclude_namespaces': [],
@@ -220,3 +226,4 @@ SWAGGER_SETTINGS = {
     },
     'doc_expansion': 'none',
 }
+
