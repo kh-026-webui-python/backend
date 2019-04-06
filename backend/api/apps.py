@@ -1,3 +1,7 @@
+""""
+    docstring for api.apps
+"""
+
 from django.apps import AppConfig
 
 

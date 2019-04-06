@@ -1,3 +1,5 @@
-from django.test import TestCase
+""""
+    docstring for tests
+"""
 
 # Create your tests here.
