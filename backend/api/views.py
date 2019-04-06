@@ -1,17 +1,14 @@
+import os
 from io import TextIOWrapper
 
+import psycopg2
 from api.serializers import UserSerializer
 from api.user_manager import UserManager
 from django.contrib.auth.models import User
-from rest_framework import viewsets
-from api.serializers import UserSerializer
-from rest_framework.response import Response
-from rest_framework.views import APIView
-import psycopg2
-import os
 from libs.parser import CSVParser
 from rest_framework import viewsets, views
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -39,9 +36,11 @@ class HealthCheckView(APIView):
         return Response({"server": "pong",
                          "database": db})
 
+
 def upload_CV(request):
     if request.method == 'POST' and request.FILES['file']:
         myfile = request.FILES['file']
+
 
 class FileUploadView(views.APIView):
     """

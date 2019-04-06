@@ -1,6 +1,5 @@
-from django.urls import path, re_path, include
+from django.urls import re_path, include
 from rest_framework import routers
-from rest_framework.urlpatterns import format_suffix_patterns
 from rest_framework.schemas import get_schema_view
 from api import views as api_views
 from rest_framework_swagger.renderers import SwaggerUIRenderer, OpenAPIRenderer
@@ -17,6 +16,5 @@ urlpatterns = [
     re_path(r'^users/', include(router.urls), name="users"),
     re_path(r'^login/', authtoken_views.obtain_auth_token),
     re_path(r'^admin/', admin.site.urls),
-    re_path(r'^upload/(?P<filename>[^/]+)$', api_views.FileUploadView.as_view())
-    path('api/', include('api.urls'))
+    re_path(r'api/', include('api.urls')),
 ]
