@@ -61,13 +61,13 @@ class FileUploadView(views.APIView):
 
             current_user = UserManager.to_user_data(user)
             verified_data = user_serializer.validate(current_user)
-
+            responce_data = verified_data.copy()
             try:
                 existing_user = User.objects.get(username=verified_data['username'])
             except User.DoesNotExist:
                 user_serializer.create(verified_data)
-                response.append(verified_data)
             else:
-                response.append({'error': str(existing_user.username) + ' already exist'})
+                responce_data['error'] = str(existing_user.username) + ' already exist'
+            response.append(responce_data)
 
-        return Response({'received data': response})
+        return Response(response)
