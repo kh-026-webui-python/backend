@@ -16,5 +16,5 @@ urlpatterns = [
     re_path(r'^login/', authtoken_views.obtain_auth_token),
     re_path(r'^admin/', admin.site.urls),
     re_path(r'^resume/', api_views.upload_file),
-    path('api/', include('api.urls'))
+    path('api/', include('api.urls')),
 ]
