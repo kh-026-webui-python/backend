@@ -103,7 +103,6 @@ class UploadResumeView(APIView):
 
         return Response(status=status.HTTP_201_CREATED)
 
-
 class FileUploadView(APIView):
     """
     API endpoint for CSV File upload
