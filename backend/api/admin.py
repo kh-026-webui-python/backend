@@ -1,7 +1,7 @@
-from django.contrib import admin
-from django.contrib.auth.models import User
 from api.models import Profile
+from django.contrib import admin
 
-admin.site.unregister(User)
-admin.site.register(User)
+from .models import Document
+
 admin.site.register(Profile)
+admin.site.register(Document)

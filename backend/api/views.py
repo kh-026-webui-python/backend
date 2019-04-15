@@ -2,13 +2,21 @@ import os
 from io import TextIOWrapper
 
 import psycopg2
-from api.serializers import UserSerializer
-from api.user_manager import UserManager
 from django.contrib.auth.models import User
-from libs.parser import CSVParser
-from rest_framework import viewsets, views
+from django.core.exceptions import ValidationError
+from django.core.files.storage import FileSystemStorage
+from django.db.utils import IntegrityError
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from utils.FileValidator import FileValidator
+
+from utils.parser import CSVParser
+from utils.user_manager import UserManager
+from .models import Document
+from .serializers import UserSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -17,6 +25,29 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
+
+
+@csrf_exempt
+def upload_file(request):
+    if request.method == 'POST':
+
+        filename = request.FILES['file'].name
+
+        if filename.endswith('.csv'):
+
+            '''
+            TODO: add file saving here
+            '''
+
+            return JsonResponse({'message': 'Sent'}, status=status.HTTP_200_OK)
+
+        else:
+
+            return JsonResponse({'message': 'Wrong extension, please use .csv files in your request'},
+                                status=status.HTTP_409_CONFLICT)
+    else:
+
+        return JsonResponse({'message': 'Wrong method,use POST'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
 class HealthCheckView(APIView):
@@ -37,12 +68,43 @@ class HealthCheckView(APIView):
                          "database": db})
 
 
-def upload_CV(request):
-    if request.method == 'POST' and request.FILES['file']:
-        myfile = request.FILES['file']
+class UploadResumeView(APIView):
+
+    def post(self, request):
+
+        validator = FileValidator(
+            allowed_extensions=['pdf'],
+            allowed_mimetypes=['application/pdf'],
+            max_size=3 * 1024 * 1024
+        )
+
+        if request.data.get('file'):
+            uploaded_file = request.data.get('file')
+            try:
+                validator(uploaded_file)
+            except ValidationError as e:
+                print(e)
+                return JsonResponse({'error': e.message}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return JsonResponse({'error': "there is no file"}, status=status.HTTP_400_BAD_REQUEST)
+
+        folder = 'CVs/'
+        filename = uploaded_file.name
+        storage = FileSystemStorage(location=folder)
+
+        cv = Document()
+        cv.path = f"{storage.location}/{filename}"
+        try:
+            cv.save()
+            storage.save(filename, uploaded_file)
+        except IntegrityError as e:
+            print(e.args[0])
+            return JsonResponse({'error': 'file with same name already exists'}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(status=status.HTTP_201_CREATED)
 
 
-class FileUploadView(views.APIView):
+class FileUploadView(APIView):
     """
     API endpoint for CSV File upload
     """

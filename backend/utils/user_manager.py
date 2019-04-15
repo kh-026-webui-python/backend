@@ -1,6 +1,6 @@
 from hashlib import blake2b
 
-from libs.transliteration import Transliterator
+from .transliteration import Transliterator
 
 
 class UserManager(object):

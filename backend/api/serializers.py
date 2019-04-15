@@ -1,8 +1,10 @@
 from datetime import datetime
 
-from api.models import Profile
 from django.contrib.auth.models import User
 from rest_framework import serializers
+
+from .models import Document
+from .models import Profile
 
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -42,3 +44,9 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
             data['profile'] = ProfileSerializer().validate(data['profile'])
 
         return {key: value for key, value in data.items() if key in self.fields}
+
+
+class DocumentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Document
+        fields = ('path',)
