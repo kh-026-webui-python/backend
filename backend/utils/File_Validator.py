@@ -2,11 +2,14 @@ import mimetypes
 from os.path import splitext
 
 from django.core.exceptions import ValidationError
-from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import filesizeformat
+from django.utils.translation import ugettext_lazy as _
 
+"""
+File contain one class that helps with file's validation 
+"""
 
-class FileValidator(object):
+class File_Validator(object):
     """
     Validator for files, checking the size, extension and mimetype.
     Initialization parameters:
@@ -23,10 +26,14 @@ class FileValidator(object):
             myfile = FileField(validators=FileValidator(max_size=24*1024*1024), ...)
     """
 
-    extension_message = _("Extension '%(extension)s' not allowed. Allowed extensions are: '%(allowed_extensions)s.'")
-    mime_message = _("MIME type '%(mimetype)s' is not valid. Allowed types are: %(allowed_mimetypes)s.")
-    min_size_message = _('The current file %(size)s, which is too small. The minumum file size is %(allowed_size)s.')
-    max_size_message = _('The current file %(size)s, which is too large. The maximum file size is %(allowed_size)s.')
+    extension_message = _("Extension '%(extension)s' not allowed. \
+Allowed extensions are: '%(allowed_extensions)s.'")
+    mime_message = _("MIME type '%(mimetype)s' is not valid. \
+Allowed types are: %(allowed_mimetypes)s.")
+    min_size_message = _('The current file %(size)s, which is too small. \
+The minumum file size is %(allowed_size)s.')
+    max_size_message = _('The current file %(size)s, which is too large. \
+The maximum file size is %(allowed_size)s.')
 
     def __init__(self, *args, **kwargs):
         self.allowed_extensions = kwargs.pop('allowed_extensions', None)
