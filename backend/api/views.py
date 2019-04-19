@@ -27,46 +27,22 @@ class UserViewSet(viewsets.ModelViewSet):  # pylint: disable=too-many-ancestors
     serializer_class = UserSerializer
 
 
-# @csrf_exempt
-# def upload_file(request):
-#     """
-#      TODO: write function docs
-#     """
-#     if request.method == 'POST':
-#
-#         filename = request.FILES['file'].name
-#
-#         if filename.endswith('.csv'):
-#
-#             '''
-#             TODO: add file saving here
-#             '''
-#
-#             return JsonResponse({'message': 'Sent'}, status=status.HTTP_200_OK)
-#
-#         else:
-#             message = {'message': 'Wrong extension, use .csv files in your request'}
-#             return JsonResponse(message, status=status.HTTP_409_CONFLICT)
-#     else:
-#         message = {'message': 'Wrong method, use POST'}
-#         return JsonResponse(message, status=status.HTTP_405_METHOD_NOT_ALLOWED)
-
-
 class HealthCheckView(APIView):
     """
     Ping server and database
     """
 
-    def get(self, request):
+    def get(self):
         """
         Making JSON response for endpoint's get request
         """
         try:
-            connect = psycopg2.connect(host=os.environ.get('DB_HOST', None),
-                                       database=os.environ.get('DB_NAME', 'db.postgres'),
-                                       user=os.environ.get('DB_USER', ''),
-                                       password=os.environ.get('DB_PASSWORD', ''))
-        except psycopg2.OperationalError as e:
+            psycopg2.connect(host=os.environ.get('DB_HOST', None),
+                             database=os.environ.get('DB_NAME', 'db.postgres'),
+                             user=os.environ.get('DB_USER', ''),
+                             password=os.environ.get('DB_PASSWORD', ''))
+        except psycopg2.OperationalError as error:
+            print(error)
             database = "error"
         else:
             database = "pong"

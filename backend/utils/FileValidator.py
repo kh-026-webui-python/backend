@@ -9,7 +9,8 @@ from django.utils.translation import ugettext_lazy as _
 File contain one class that helps with file's validation 
 """
 
-class File_Validator(object):
+
+class FileValidator(object):
     """
     Validator for files, checking the size, extension and mimetype.
     Initialization parameters:
