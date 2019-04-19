@@ -2,6 +2,10 @@
     docstring for admin
 """
 from django.contrib import admin
+from api.models import Profile
 from .models import Document
 
-admin.register(Document)
+from django.contrib import admin
+
+admin.site.register(Profile)
+admin.site.register(Document)

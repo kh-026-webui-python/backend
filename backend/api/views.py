@@ -3,6 +3,7 @@
 """
 import os
 import shutil
+from io import TextIOWrapper
 
 import psycopg2
 from django.contrib.auth.models import User
@@ -10,11 +11,13 @@ from django.core.exceptions import ValidationError
 from django.core.files.storage import FileSystemStorage
 from django.db.utils import IntegrityError
 from django.http import JsonResponse
-from rest_framework import status, viewsets
+from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from utils.FileValidator import FileValidator
 
+from utils.parser import CSVParser
+from utils.user_manager import UserManager
 from .models import Document
 from .serializers import UserSerializer
 
@@ -32,7 +35,7 @@ class HealthCheckView(APIView):
     Ping server and database
     """
 
-    def get(self):
+    def get(self, request):
         """
         Making JSON response for endpoint's get request
         """
@@ -98,3 +101,34 @@ class UploadResumeView(APIView):
         shutil.rmtree(f"{path.location}")
 
         return Response(status=status.HTTP_200_OK)
+
+
+class FileUploadView(APIView):
+    """
+    API endpoint for CSV File upload
+    """
+
+    def post(self, request, filename, format=None):
+
+        file = TextIOWrapper(request.FILES[filename].file, encoding=request.encoding)
+
+        user_data = CSVParser.read_from_memory(file)
+
+        user_serializer = UserSerializer()
+
+        response = []
+
+        for user in user_data:
+
+            current_user = UserManager.to_user_data(user)
+            verified_data = user_serializer.validate(current_user)
+            responce_data = verified_data.copy()
+            try:
+                existing_user = User.objects.get(username=verified_data['username'])
+            except User.DoesNotExist:
+                user_serializer.create(verified_data)
+            else:
+                responce_data['error'] = str(existing_user.username) + ' already exist'
+            response.append(responce_data)
+
+        return Response(response)
