@@ -8,7 +8,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
-import logging
+# import logging
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'rest_auth',
     'rest_framework_swagger',
     'corsheaders',
+    'utils',
     'api',
 ]
 
@@ -60,8 +61,7 @@ ROOT_URLCONF = 'backend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')]
-        ,
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -185,8 +185,7 @@ LOGGING = {
             'handlers': ['null', ],
         },
         '': {
-            'handlers': ['console', 'production_file', 'debug_file', #'rollbar'
-                         ],
+            'handlers': ['console', 'production_file', 'debug_file', ], #'rollbar'
             'level': "DEBUG",
         },
     }

@@ -1,4 +1,8 @@
+"""
+    Views for api app
+"""
 import os
+import shutil
 from io import TextIOWrapper
 
 import psycopg2
@@ -7,7 +11,6 @@ from django.core.exceptions import ValidationError
 from django.core.files.storage import FileSystemStorage
 from django.db.utils import IntegrityError
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -19,7 +22,7 @@ from .models import Document
 from .serializers import UserSerializer
 
 
-class UserViewSet(viewsets.ModelViewSet):
+class UserViewSet(viewsets.ModelViewSet):  # pylint: disable=too-many-ancestors
     """
     API endpoint for USERS
     """
@@ -27,64 +30,52 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
 
 
-@csrf_exempt
-def upload_file(request):
-    if request.method == 'POST':
-
-        filename = request.FILES['file'].name
-
-        if filename.endswith('.csv'):
-
-            '''
-            TODO: add file saving here
-            '''
-
-            return JsonResponse({'message': 'Sent'}, status=status.HTTP_200_OK)
-
-        else:
-
-            return JsonResponse({'message': 'Wrong extension, please use .csv files in your request'},
-                                status=status.HTTP_409_CONFLICT)
-    else:
-
-        return JsonResponse({'message': 'Wrong method,use POST'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
-
-
 class HealthCheckView(APIView):
+    """
+    Ping server and database
+    """
 
     def get(self, request):
-        db = "error"
+        """
+        Making JSON response for endpoint's get request
+        """
         try:
-            conn = psycopg2.connect(host=os.environ.get('DB_HOST', None),
-                                    database=os.environ.get('DB_NAME', 'db.postgres'),
-                                    user=os.environ.get('DB_USER', ''),
-                                    password=os.environ.get('DB_PASSWORD', ''))
-            db = "pong"
-        except Exception as e:
-            print(e)
-            print("Something wrong with database.")
-
-        return Response({"server": "pong",
-                         "database": db})
+            psycopg2.connect(host=os.environ.get('DB_HOST', None),
+                             database=os.environ.get('DB_NAME', 'db.postgres'),
+                             user=os.environ.get('DB_USER', ''),
+                             password=os.environ.get('DB_PASSWORD', ''))
+        except psycopg2.OperationalError as error:
+            print(error)
+            database = "error"
+        else:
+            database = "pong"
+        return JsonResponse({"server": "pong", "database": database}, status=status.HTTP_200_OK)
 
 
 class UploadResumeView(APIView):
+    """
+    Validate and save file on server
+    """
+
+    validator = FileValidator(
+        allowed_extensions=['pdf'],
+        allowed_mimetypes=['application/pdf'],
+        min_size=307,
+        max_size=3 * 1024 * 1024
+    )
 
     def post(self, request):
-
-        validator = FileValidator(
-            allowed_extensions=['pdf'],
-            allowed_mimetypes=['application/pdf'],
-            max_size=3 * 1024 * 1024
-        )
+        """
+        Handle post request on server's endpoint
+        """
 
         if request.data.get('file'):
             uploaded_file = request.data.get('file')
             try:
-                validator(uploaded_file)
-            except ValidationError as e:
-                print(e)
-                return JsonResponse({'error': e.message}, status=status.HTTP_400_BAD_REQUEST)
+                self.validator(uploaded_file)
+            except ValidationError as error:
+                print(error)
+                return JsonResponse({'error': error.message}, status=status.HTTP_400_BAD_REQUEST)
         else:
             return JsonResponse({'error': "there is no file"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -92,16 +83,25 @@ class UploadResumeView(APIView):
         filename = uploaded_file.name
         storage = FileSystemStorage(location=folder)
 
-        cv = Document()
-        cv.path = f"{storage.location}/{filename}"
+        temp_cv = Document()
+        temp_cv.path = f"{storage.location}/{filename}"
         try:
-            cv.save()
+            temp_cv.save()
             storage.save(filename, uploaded_file)
-        except IntegrityError as e:
-            print(e.args[0])
-            return JsonResponse({'error': 'file with same name already exists'}, status=status.HTTP_400_BAD_REQUEST)
+        except IntegrityError as error:
+            print(error.args[0])
+            message = {'error': 'file with same name already exists'}
+            return JsonResponse(message, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(status=status.HTTP_201_CREATED)
+
+    def delete(self, request):
+        Document.objects.all().delete()
+        path = FileSystemStorage("CVs/")
+        shutil.rmtree(f"{path.location}")
+
+        return Response(status=status.HTTP_200_OK)
+
 
 class FileUploadView(APIView):
     """

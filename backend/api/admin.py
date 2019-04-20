@@ -1,3 +1,7 @@
+""""
+    docstring for admin
+"""
+from django.contrib import admin
 from api.models import Profile
 from .models import Document
 

@@ -1,3 +1,7 @@
+"""
+    docstring for api.serializers
+"""
+
 from datetime import datetime
 
 from django.contrib.auth.models import User
@@ -19,9 +23,15 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
+    """
+    Serializer for User model
+    """
     profile = ProfileSerializer(required=True)
 
     class Meta:
+        """
+        Settings for serializer
+        """
         model = User
         fields = ('url', 'username', 'email', 'first_name', 'last_name', 'password', 'profile')
         extra_kwargs = {'password': {'write_only': True}}
@@ -29,7 +39,6 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
     def create(self, validated_data):
         profile_data = validated_data.pop('profile')
         password = validated_data.pop('password')
-
         user = User(**validated_data)
         user.set_password(password)
 
@@ -39,6 +48,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
         return user
 
+
     def validate(self, data):
         if 'profile' in data:
             data['profile'] = ProfileSerializer().validate(data['profile'])
@@ -47,6 +57,13 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class DocumentSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Document model
+    """
+
     class Meta:
+        """
+        Settings for serializer
+        """
         model = Document
         fields = ('path',)

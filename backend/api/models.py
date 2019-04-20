@@ -1,7 +1,9 @@
+"""
+    docstring for models
+"""
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
-from django.conf import settings
 
 
 class Profile(models.Model):
@@ -12,4 +14,8 @@ class Profile(models.Model):
 
 
 class Document(models.Model):
+    """
+    Fields:
+        path - path where file has been saved
+    """
     path = models.FilePathField(path=settings.BASE_DIR, max_length=150, unique=True)
