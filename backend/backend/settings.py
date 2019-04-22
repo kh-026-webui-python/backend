@@ -8,6 +8,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+
 # import logging
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -33,6 +34,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'rest_auth.registration',
     'rest_framework',
     'rest_framework.authtoken',
     'rest_auth',
@@ -41,6 +46,10 @@ INSTALLED_APPS = [
     'utils',
     'api',
 ]
+
+SITE_ID = 1
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -185,12 +194,11 @@ LOGGING = {
             'handlers': ['null', ],
         },
         '': {
-            'handlers': ['console', 'production_file', 'debug_file', ], #'rollbar'
+            'handlers': ['console', 'production_file', 'debug_file', ],  # 'rollbar'
             'level': "DEBUG",
         },
     }
 }
-
 
 SWAGGER_SETTINGS = {
     'exclude_url_names': [],
