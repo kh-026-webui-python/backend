@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/kh-026-webui-python/backend.svg?branch=setup-travis)](https://travis-ci.org/kh-026-webui-python/backend)
+
 # SoftTest
 
 
@@ -19,27 +21,34 @@ https://github.com/kh-026-webui-python/backend/network/members
 
 ## Database
 
-## Setup Postgresql
+### Setup Postgresql
+##### Install database:
 ```
 sudo apt install postgresql postgresql-contrib
+```
+##### Enter interactive session:
+```
 sudo -u postgres psql
 ```
-input into postgres=#
-
+##### Create user and database:
 ```
-You need to create a unique user database. 
-In future, the user credential you will need to added to environment variables 
+CREATE DATABASE soft_db;
+CREATE USER soft_user WITH PASSWORD 'password';
 ```
-
+##### Give the rights of access to the database for user:
 ```
-create user <your_user> with password 'your_password';
-create database soft_db;
-grant all privileges on database soft_db to <your_user>;
+ALTER ROLE soft_user SET client_encoding TO 'utf8';
+ALTER ROLE soft_user SET default_transaction_isolation TO 'read committed';
+ALTER ROLE soft_user SET timezone TO 'UTC';
+ALTER USER soft_user CREATEDB;
+GRANT ALL PRIVILEGES ON DATABASE soft_db TO soft_user;
 ```
-\q - to exit the postgres
-
+##### To exit the postgres console:
 ```
-You can add environment variables as follow:
+\q
+```
+##### You can add environment variables as follow:
+```
     Edit configurations.. -> Environment variables -> Add("+" signs)
 ```
 
