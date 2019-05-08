@@ -12,14 +12,27 @@ from .models import Profile
 
 
 class ProfileSerializer(serializers.ModelSerializer):
+    """
+        Serializer for Profile model
+    """
+
+    location = serializers.CharField(source='get_location_display')
+    english_level = serializers.CharField(source='get_english_level_display')
+
     class Meta:
         model = Profile
-        fields = ('location', 'birth_date')
+        fields = ('location', 'birth_date', 'english_level', 'phone_number', 'english_level')
 
     def validate(self, data):
         if 'birth_date' in data:
             data['birth_date'] = datetime.strptime(data['birth_date'], "%d.%m.%y").strftime('%Y-%m-%d')
         return {key: value for key, value in data.items() if key in self.fields}
+
+    def get_location(self, obj):
+        return obj.get_location_display()
+
+    def get_english_level(self, obj):
+        return obj.get_english_level_display()
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -33,7 +46,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         Settings for serializer
         """
         model = User
-        fields = ('url', 'username', 'email', 'first_name', 'last_name', 'password', 'profile')
+        fields = ('url', 'username', 'email', 'first_name', 'last_name', 'password', 'date_joined', 'profile')
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
@@ -47,7 +60,6 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         Profile.objects.create(user=user, **profile_data)
 
         return user
-
 
     def validate(self, data):
         if 'profile' in data:

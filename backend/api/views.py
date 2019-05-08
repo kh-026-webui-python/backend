@@ -1,6 +1,7 @@
 """
     Views for api app
 """
+import logging
 import os
 import shutil
 from io import TextIOWrapper
@@ -12,20 +13,27 @@ from django.core.files.storage import FileSystemStorage
 from django.db.utils import IntegrityError
 from django.http import JsonResponse
 from rest_framework import viewsets, status
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
+from rest_framework.generics import get_object_or_404
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rollbar import logger
 from utils.FileValidator import FileValidator
 
 from utils.parser import CSVParser
 from utils.user_manager import UserManager
-from .models import Document
-from .serializers import UserSerializer
+from .models import Document, Profile
+from .serializers import UserSerializer, ProfileSerializer
+
+LOGGER = logging.getLogger('django')
 
 
 class UserViewSet(viewsets.ModelViewSet):  # pylint: disable=too-many-ancestors
     """
     API endpoint for USERS
     """
+
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
 
@@ -132,3 +140,36 @@ class FileUploadView(APIView):
             response.append(responce_data)
 
         return Response(response)
+
+
+class CurrentProfile(APIView):
+    """
+    API endpoint for information about the authenticated user
+    """
+
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        """
+        Return user's data.
+        :param request: HTTP request
+        :return: Response(data, status)
+        """
+        user = User.objects.get(id=request.user.id)
+        try:
+            profile = Profile.objects.get(user=user)
+        except Profile.DoesNotExist:
+            profile = Profile.objects.create(user=user)
+            LOGGER.info(f'Created profile for user: {profile.user.username}')
+
+        serializer = UserSerializer(user, context={'request': request})
+        response_data = serializer.data
+        response_data['profile'] = ProfileSerializer(profile).data
+
+        list_location = [location[1] for location in Profile.LOCATION_CHOICES]
+        response_data['profile']['choices_location'] = list_location
+
+        list_english = [level[1] for level in Profile.ENGLISH_LEVEL_CHOICES]
+        response_data['profile']['choices_english'] = list_english
+
+        return JsonResponse(response_data, status=status.HTTP_200_OK)
