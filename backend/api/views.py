@@ -18,8 +18,8 @@ from utils.FileValidator import FileValidator
 
 from utils.parser import CSVParser
 from utils.user_manager import UserManager
-from .models import Document
-from .serializers import UserSerializer
+from .models import Document, Course
+from .serializers import UserSerializer, CourseSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):  # pylint: disable=too-many-ancestors
@@ -132,3 +132,21 @@ class FileUploadView(APIView):
             response.append(responce_data)
 
         return Response(response)
+
+
+class CoursesView(APIView):
+    """
+    View that help manipulate with courses
+    """
+    def get(self, request):
+        """
+        :param request:
+        :return:
+            TODO JsonResponse with courses
+        """
+        all_courses = list(Course.objects.all())
+        dict = {}
+        for course in all_courses:
+            dict[course.id] = CourseSerializer(course).data
+
+        return JsonResponse(dict)
