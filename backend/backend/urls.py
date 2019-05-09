@@ -18,7 +18,6 @@ urlpatterns = [
 
     re_path(r'^schema/', SCHEMA_VIEW, name="docs"),
     re_path(r'^users/', include(ROUTER.urls), name="users"),
-    re_path(r'^login/', authtoken_views.obtain_auth_token),
     re_path(r'^admin/', admin.site.urls),
     re_path(r'^api/', include('api.urls')),
 

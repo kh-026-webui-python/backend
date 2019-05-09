@@ -22,21 +22,26 @@ class Document(models.Model):
     path = models.FilePathField(path=settings.BASE_DIR, max_length=150, unique=True)
 
 
-FILTER_ACTIVE = u'1'
-FILTER_PLANNED = u'2'
-FILTER_FREE = u'3'
-FILTER_PAID = u'4'
-FILTER_CHOICES = (
-    (FILTER_ACTIVE, u'Active'),
-    (FILTER_PLANNED, u'Planned'),
-    (FILTER_FREE, u'Free'),
-    (FILTER_PAID, u'Paid'),
-)
-
-
 class Course(models.Model):
+    """
+    Constant:
+        FILTER_CHOICES - choice for filters field
+    Fields:
+        name - name of course
+        filters - filters, that help search course
+        description - text, that describing a course
+    """
     name = models.CharField(max_length=140)
 
-    filters = ChoiceArrayField(
-        models.CharField(choices=FILTER_CHOICES, max_length=2, blank=True, default=FILTER_PLANNED),
+    FILTER_CHOICES = (
+        ('0', 'Free:Finance'),
+        ('1', 'Paid:Finance'),
+        ('2', 'Active:Status'),
+        ('3', 'Planned:Status')
     )
+
+    filters = ChoiceArrayField(
+        models.CharField(choices=FILTER_CHOICES, max_length=2, blank=True),
+    )
+
+    description = models.TextField(default="")
