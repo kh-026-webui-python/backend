@@ -23,8 +23,8 @@ from utils.FileValidator import FileValidator
 
 from utils.parser import CSVParser
 from utils.user_manager import UserManager
-from .models import Document, Profile
-from .serializers import UserSerializer, ProfileSerializer
+from .models import Document, Profile, Course
+from .serializers import UserSerializer, ProfileSerializer, CourseSerializer
 
 LOGGER = logging.getLogger('django')
 
@@ -193,3 +193,22 @@ class CurrentProfile(APIView):
         response_data['profile']['choices_english'] = list_english
 
         return JsonResponse(response_data, status=status.HTTP_200_OK)
+
+
+class CoursesView(APIView):
+    """
+    View that help manipulate with courses
+    """
+
+    def get(self, request):
+        """
+        :param request:
+        :return:
+            TODO JsonResponse with courses
+        """
+        all_courses = list(Course.objects.all())
+        dict = {}
+        for course in all_courses:
+            dict[course.id] = CourseSerializer(course).data
+
+        return JsonResponse(dict)

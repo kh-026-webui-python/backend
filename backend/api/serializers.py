@@ -7,8 +7,7 @@ from datetime import datetime
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from .models import Document
-from .models import Profile
+from .models import Document, Profile, Course
 
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -105,3 +104,28 @@ class DocumentSerializer(serializers.ModelSerializer):
         """
         model = Document
         fields = ('path',)
+
+
+class ChoiceArrayField(serializers.Field):
+    """
+    Serializer for filters field in Course model
+    """
+    def to_representation(self, value):
+        """
+        :param value: list of filters in non human readable formate
+        :return: filters: string that represent list of filters
+        """
+        filters = "[ "
+        for filter in value:
+            filters += '\"' + Course.FILTER_CHOICES[int(filter)][1] + "\", "
+        return filters[:-2] + " ]"
+
+
+class CourseSerializer(serializers.ModelSerializer):
+    name = serializers.CharField()
+    description = serializers.CharField()
+    filters = ChoiceArrayField()
+
+    class Meta:
+        model = Course
+        fields = ('name', 'filters', 'description')
