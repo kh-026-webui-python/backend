@@ -23,10 +23,20 @@ class ProfileSerializer(serializers.ModelSerializer):
         model = Profile
         fields = ('location', 'birth_date', 'english_level', 'phone_number', 'english_level')
 
-    def validate(self, data):
-        if 'birth_date' in data:
-            data['birth_date'] = datetime.strptime(data['birth_date'], "%d.%m.%y").strftime('%Y-%m-%d')
-        return {key: value for key, value in data.items() if key in self.fields}
+    def update(self, instance, validated_data):
+        print('asd')
+        instance.first_name = validated_data.get('first_name', instance.first_name)
+        instance.last_name = validated_data.get('last_name', instance.last_name)
+        instance.save()
+        # instance.user.first_name = user.get('first_name')
+        print('hey')
+        return instance
+
+    #
+    # def validate(self, data):
+    #     if 'birth_date' in data:
+    #         data['birth_date'] = datetime.strptime(data['birth_date'], "%d.%m.%y").strftime('%Y-%m-%d')
+    #     return {key: value for key, value in data.items() if key in self.fields}
 
     def get_location(self, obj):
         return obj.get_location_display()
@@ -35,7 +45,7 @@ class ProfileSerializer(serializers.ModelSerializer):
         return obj.get_english_level_display()
 
 
-class UserSerializer(serializers.HyperlinkedModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     """
     Serializer for User model
     """
@@ -60,6 +70,22 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         Profile.objects.create(user=user, **profile_data)
 
         return user
+
+    def update(self, instance, validated_data):
+        nested_data = self.initial_data
+        nested_profile = instance.profile
+        # nested_data = validated_data.pop('profile')
+
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        return instance
+
+        # instance.first_name = validated_data.get('first_name', instance.first_name)
+        # instance.last_name = validated_data.get('last_name', instance.last_name)
+
+        # instance.user.first_name = user.get('first_name')
+        # return instance
 
     def validate(self, data):
         if 'profile' in data:

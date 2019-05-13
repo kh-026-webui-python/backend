@@ -40,7 +40,7 @@ class Profile(models.Model):
         ('DP', 'Dnipropetrovsk'),
         ('DT', 'Donetsk'),
         ('IF', 'Ivano-Frankivsk'),
-        ('KK', 'Kharkiv'),
+        ('KR', 'Kharkiv'),
         ('KS', 'Kherson'),
         ('KM', 'Khmelnytskyi'),
         ('KV', 'Kiev'),

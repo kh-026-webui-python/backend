@@ -149,6 +149,25 @@ class CurrentProfile(APIView):
 
     permission_classes = (IsAuthenticated,)
 
+    def patch(self, request, *args, **kwargs):
+        """
+        Updates user's data.
+        :param request: HTTP request
+        :return: Response(data, status)
+        """
+        user = User.objects.get(id=request.user.id)
+
+        profile = Profile.objects.get(user_id=request.user.id)
+        serializer = UserSerializer(user, data=request.data, partial=True)
+        if not serializer.is_valid():
+            LOGGER.error(f'Something wrong with serializer {serializer.errors}')
+            return JsonResponse(serializer.errors, status.HTTP_400_BAD_REQUEST)
+
+        serializer.save()
+        LOGGER.info(f'Profile of the {user.username} updated')
+
+        return JsonResponse(serializer.data, status.HTTP_200_OK)
+
     def get(self, request):
         """
         Return user's data.
@@ -163,6 +182,7 @@ class CurrentProfile(APIView):
             LOGGER.info(f'Created profile for user: {profile.user.username}')
 
         serializer = UserSerializer(user, context={'request': request})
+
         response_data = serializer.data
         response_data['profile'] = ProfileSerializer(profile).data
 
