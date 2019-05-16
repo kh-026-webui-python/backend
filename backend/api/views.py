@@ -4,13 +4,15 @@
 import os
 import shutil
 from io import TextIOWrapper
+import json
 
 import psycopg2
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+from django.core.files import File
 from django.core.files.storage import FileSystemStorage
 from django.db.utils import IntegrityError
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -138,6 +140,7 @@ class CoursesView(APIView):
     """
     View that help manipulate with courses
     """
+
     def get(self, request):
         """
         :param request:
@@ -150,3 +153,15 @@ class CoursesView(APIView):
             dict[course.id] = CourseSerializer(course).data
 
         return JsonResponse(dict)
+
+
+class QuizTaskTransfer(APIView):
+
+    def get(self, request, quizname):
+        filename = 'QuizTest' + quizname + '.json'
+        file_path = "../QuizTasks/" + filename
+        file = open(file_path, 'r')
+        file_data = json.load(file)
+        file_data = json.dumps(file_data)
+        file.close()
+        return HttpResponse(file_data)
