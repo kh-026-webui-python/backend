@@ -1,0 +1,30 @@
+sudo: required
+
+language: python
+
+python:
+  - "3.6"
+
+before_install: cd backend
+
+install:
+  - pip install -r requirements.txt
+
+services:
+  - postgresql
+addons:
+  postgresql: '9.5'
+
+before_script:
+  - psql -U postgres -c "CREATE  DATABASE $DB_NAME;"
+  - psql -c "CREATE USER $DB_USER WITH PASSWORD '$DB_PASSWORD';" -U postgres
+  - psql -c "ALTER ROLE $DB_USER SET client_encoding TO 'utf8';" -U postgres
+  - psql -c "ALTER ROLE $DB_USER SET default_transaction_isolation TO 'read committed';"
+    -U postgres
+  - psql -c "ALTER ROLE $DB_USER SET timezone TO 'UTC';" -U postgres
+  - psql -c "GRANT ALL PRIVILEGES ON DATABASE $DB_NAME TO $DB_USER;" -U postgres
+  - psql -c "ALTER USER $DB_USER CREATEDB;" -U postgres
+  - python3 manage.py migrate
+
+script:
+  - pytest -v
